@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   env: {
     API_KEY: process.env.API_KEY,
+    RPC: process.env.RPC,
   },
   images: {
     remotePatterns: [
