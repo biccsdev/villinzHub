@@ -24,3 +24,31 @@ a {
   background-color: #707070;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.container-snap::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.container-snap {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.wallet-button {
+  background-color: #2e3532;
+  color: #e0e2db;
+  font-weight: bolder;
+  margin-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 0.25rem;
+
+}
+
+.wallet-button:hover {
+  background-color: #e0e2db !important;
+  color: #2e3532 !important;
+}

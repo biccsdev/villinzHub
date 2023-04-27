@@ -3,7 +3,16 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: "media",
   theme: {
-    extend: {},
+    extend: {
+      height: {
+        '100': '30rem',
+      },
+    },
+    colors: {
+      'whiteNavbar': '#e0e2db',
+      'redBackground': '#8b2635',
+      'blackDetails': '#2e3532',
+    }
   },
   plugins: [
     require('daisyui'),
@@ -45,7 +54,7 @@ module.exports = {
           'warning': '#ff9900',           /* Warning */
           'error': '#ff5724',             /* Error */
         },
-      },
+      }
       // backup themes:
       // 'dark',
       // 'synthwave'
