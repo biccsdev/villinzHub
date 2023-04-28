@@ -16,7 +16,6 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 
       <WalletContextProvider>
         <div className="flex flex-col h-screen bg-redBackground overflow-scroll container-snap">
-          {/* <Notifications /> */}
           <AppBar />
           <Component {...pageProps} />
         </div>

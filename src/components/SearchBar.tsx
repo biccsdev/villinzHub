@@ -41,43 +41,70 @@ export function SearchBar() {
       const nftsHelper = [];
 
       const getMetadata = async () => {
-        const { data } = await axios.post(url2, {
-          mintAccounts: tokensRaw.map((item) => item.mint),
-          includeOffChain: true,
-          disableCache: false,
-        });
-        for (let i = 0; i < data.length; i++) {
-          const element = data[i];
-          if (
-            element.onChainMetadata.metadata === null ||
-            element.offChainMetadata.error !== ""
-          ) {
-            continue;
-          }
-          if (element.onChainMetadata.metadata.tokenStandard === "Fungible") {
-            const tokenAmount = tokensRaw.find(
-              (token) => token.mint == element.account
-            );
-            const tkn = {
-              img: element.offChainMetadata.metadata.image,
-              symbol: element.offChainMetadata.metadata.symbol,
-              amount: tokenAmount.amount / Math.pow(10, tokenAmount.decimals),
+        let done = false;
+        let tokensArr = tokensRaw.map((item) => item.mint);
+        let arr1 = tokensArr.slice(1, tokensArr.length / 2);
+        let arr2 = tokensArr.slice(tokensArr.length / 2 + 1, tokensArr.length);
+
+        while (!done) {
+          let details;
+          if (arr1 && !arr2) {
+            details = {
+              mintAccounts: arr1,
+              includeOffChain: true,
+              disableCache: false,
             };
-            tkns.push(tkn);
+            arr1 = null;
           }
-          if (
-            element.onChainMetadata.metadata.tokenStandard === "NonFungible" ||
-            element.onChainMetadata.metadata.tokenStandard ===
-              "ProgrammableNonFungible"
-          ) {
-            const nft = {
-              img: element.offChainMetadata.metadata.image,
-              name: element.offChainMetadata.metadata.name,
-              description: element.offChainMetadata.metadata.description,
-              attributes: element.offChainMetadata.attributes,
-              //   collectionId: element.onChainMetadata.metadata.collection.key,
+          if (arr2 && arr1) {
+            details = {
+              mintAccounts: arr2,
+              includeOffChain: true,
+              disableCache: false,
             };
-            nftsHelper.push(nft);
+            arr2 = null;
+          }
+          if (!arr1 && !arr2) {
+            done = true;
+            break;
+          }
+
+          const { data } = await axios.post(url2, details);
+
+          for (let i = 0; i < data.length; i++) {
+            const element = data[i];
+            if (
+              element.onChainMetadata.metadata === null ||
+              element.offChainMetadata.error !== ""
+            ) {
+              continue;
+            }
+            if (element.onChainMetadata.metadata.tokenStandard === "Fungible") {
+              const tokenAmount = tokensRaw.find(
+                (token) => token.mint == element.account
+              );
+              const tkn = {
+                img: element.offChainMetadata.metadata.image,
+                symbol: element.offChainMetadata.metadata.symbol,
+                amount: tokenAmount.amount / Math.pow(10, tokenAmount.decimals),
+              };
+              tkns.push(tkn);
+            }
+            if (
+              element.onChainMetadata.metadata.tokenStandard ===
+                "NonFungible" ||
+              element.onChainMetadata.metadata.tokenStandard ===
+                "ProgrammableNonFungible"
+            ) {
+              const nft = {
+                img: element.offChainMetadata.metadata.image,
+                name: element.offChainMetadata.metadata.name,
+                description: element.offChainMetadata.metadata.description,
+                attributes: element.offChainMetadata.attributes,
+                //   collectionId: element.onChainMetadata.metadata.collection.key,
+              };
+              nftsHelper.push(nft);
+            }
           }
         }
       };
