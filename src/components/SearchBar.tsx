@@ -42,7 +42,7 @@ export function SearchBar() {
 
       const getMetadata = async () => {
         let done = false;
-        let tokensArr = tokensRaw.map((item) => item.mint);
+        const tokensArr = tokensRaw.map((item) => item.mint);
         let arr1 = tokensArr.slice(1, tokensArr.length / 2);
         let arr2 = tokensArr.slice(tokensArr.length / 2 + 1, tokensArr.length);
 
