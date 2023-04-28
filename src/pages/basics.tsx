@@ -6,7 +6,7 @@ const Basics: NextPage = (props) => {
   return (
     <div>
       <Head>
-        <title>Villinz Tools</title>
+        <title>VillinzHUB</title>
         <meta name="description" content="Basic Functionality" />
       </Head>
       <BasicsView />

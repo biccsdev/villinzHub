@@ -9,18 +9,16 @@ require("@solana/wallet-adapter-react-ui/styles.css");
 require("../styles/globals.css");
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
-  const [isHolder, setIsHolder] = useState(null);
   return (
     <>
       <Head>
-        <title>Villinz Tools</title>
+        <title>VillinzHUB</title>
       </Head>
 
       <WalletContextProvider>
         <div className="flex flex-col h-screen bg-redBackground overflow-scroll container-snap">
           {/* <Notifications /> */}
           <AppBar />
-          {}
           <Component {...pageProps} />
         </div>
       </WalletContextProvider>

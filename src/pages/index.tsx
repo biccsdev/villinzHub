@@ -6,8 +6,11 @@ const Home: NextPage = (props) => {
   return (
     <div>
       <Head>
-        <title>Villinz Tools</title>
-        <meta name="description" content="Solana tools for Villinz Community" />
+        <title>VillinzHUB</title>
+        <meta
+          name="description"
+          content="Solana tools for the Villinz Community"
+        />
       </Head>
       <HomeView />
     </div>

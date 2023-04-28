@@ -53,9 +53,11 @@ export const AppBar: FC = (props) => {
         <div className="flex flex-wrap navbar-end align-middle">
           <WalletMultiButton className="wallet-button" />
           <div className="w-full flex justify-end text-center mt-2 pb-2 mr-4 font-bold text-whiteNavbar">
-            <Image src={solanaLogo} width={25} height={25} />
             {wallet.publicKey && (
-              <p className="ml-2">{(balance || 0).toLocaleString()} $SOL</p>
+              <>
+                <Image src={solanaLogo} width={25} height={25} />
+                <p className="ml-2">{(balance || 0).toLocaleString()} $SOL</p>
+              </>
             )}
           </div>
         </div>
