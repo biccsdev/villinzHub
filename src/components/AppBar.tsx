@@ -1,5 +1,4 @@
 import { FC, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
 
 import solanaLogo from "../../public/solanaLogo.png";
@@ -31,7 +30,7 @@ export const AppBar: FC = (props) => {
         <div className="navbar-start">
           <div className="hidden sm:inline w-22 h-22 md:p-2">
             <div className="flex items-center">
-              <Image src={villinzSvg} width={80} height={80} />
+              <Image src={villinzSvg} width={80} height={80} alt="logo" />
               {/* <h1 className="text-whiteNavbar font-extrabold">VILLINZ TOOLS</h1> */}
             </div>
           </div>
@@ -55,7 +54,12 @@ export const AppBar: FC = (props) => {
           <div className="w-full flex justify-end text-center mt-2 pb-2 mr-4 font-bold text-whiteNavbar">
             {wallet.publicKey && (
               <>
-                <Image src={solanaLogo} width={25} height={25} />
+                <Image
+                  src={solanaLogo}
+                  width={25}
+                  height={25}
+                  alt="logo solana"
+                />
                 <p className="ml-2">{(balance || 0).toLocaleString()} $SOL</p>
               </>
             )}

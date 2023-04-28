@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import Image from "next/image";
 
 import solanaLogo from "../../public/solanaLogo.png";
@@ -34,7 +34,7 @@ export function SearchBar() {
           });
         }
       };
-      const balance = await getBalances();
+      await getBalances();
 
       const url2 = `https://api.helius.xyz/v0/token-metadata?api-key=${API_KEY}`;
       const tkns = [];
@@ -133,6 +133,7 @@ export function SearchBar() {
                   href="https://twitter.com/itsbiccs"
                   className="underline"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   biccs
                 </a>{" "}
@@ -157,7 +158,12 @@ export function SearchBar() {
               <h1 className="w-full ml-5 font-extrabold text-2xl">Tokens</h1>
               <div className="w-full flex ml-5 flex-wrap">
                 <div className="w-full md:w-1/2 lg:w-2/6 flex mt-3 items-center">
-                  <Image src={solanaLogo} width={50} height={50} />
+                  <Image
+                    src={solanaLogo}
+                    width={50}
+                    height={50}
+                    alt="logo solana"
+                  />
                   <h1 className="inline-block align-middle ml-4 md:ml-8">
                     {solana}
                   </h1>
@@ -166,13 +172,17 @@ export function SearchBar() {
                   </h1>
                 </div>
                 {tokens.map((token) => (
-                  <div className="w-full md:w-1/2 lg:w-2/6 flex mt-3 items-center">
+                  <div
+                    className="w-full md:w-1/2 lg:w-2/6 flex mt-3 items-center"
+                    key={token.symbol}
+                  >
                     <Image
                       className="rounded-3xl "
                       loader={() => token.img}
                       src={token.img}
                       width={50}
                       height={50}
+                      alt="logo"
                     />
                     <h1 className="inline-block align-middle ml-2 md:ml-8">
                       {token.amount}
@@ -188,7 +198,10 @@ export function SearchBar() {
               </h1>
               <div className="w-full flex flex-wrap justify-center">
                 {nfts.map((nft) => (
-                  <div className="flex items-center justify-center md:w-1/3 ">
+                  <div
+                    className="flex items-center justify-center md:w-1/3 "
+                    key={nft.name}
+                  >
                     <a
                       className="relative block w-3/4 h-64 
                       bg-transparent group"
