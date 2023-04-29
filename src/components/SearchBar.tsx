@@ -11,6 +11,8 @@ export function SearchBar() {
   const [walletAddress, setWalletAddress] = useState("");
   const [error, setError] = useState(false);
   const [nfts, setNfts] = useState([]);
+  const [totalNfts, setTotalNfts] = useState(0);
+  const [totalTokens, setTotalTokens] = useState(0);
   const [tokens, setTokens] = useState([]);
   const [solana, setSolana] = useState(-1);
 
@@ -41,33 +43,31 @@ export function SearchBar() {
       const nftsHelper = [];
 
       const getMetadata = async () => {
-        let done = false;
+        const arrays = [];
         const tokensArr = tokensRaw.map((item) => item.mint);
-        let arr1 = tokensArr.slice(1, tokensArr.length / 2);
-        let arr2 = tokensArr.slice(tokensArr.length / 2 + 1, tokensArr.length);
+        const numberOfArrays = Math.floor(tokensArr.length / 100);
+        if (tokensArr.length > 99) {
+          for (let i = 0; i < numberOfArrays + 1; i++) {
+            const start = i * 100;
+            const end = ((numberOfArrays * 100) / numberOfArrays) * (i + 1);
+            if (i == numberOfArrays) {
+              arrays.push(tokensArr.slice(start));
+            } else {
+              arrays.push(tokensArr.slice(start, end));
+            }
+          }
+        } else {
+          arrays.push(tokensArr);
+        }
 
-        while (!done) {
-          let details;
-          if (arr1 && !arr2) {
-            details = {
-              mintAccounts: arr1,
-              includeOffChain: true,
-              disableCache: false,
-            };
-            arr1 = null;
-          }
-          if (arr2 && arr1) {
-            details = {
-              mintAccounts: arr2,
-              includeOffChain: true,
-              disableCache: false,
-            };
-            arr2 = null;
-          }
-          if (!arr1 && !arr2) {
-            done = true;
-            break;
-          }
+        for (let j = 0; j < arrays.length; j++) {
+          const details = {
+            mintAccounts: arrays[j],
+            includeOffChain: true,
+            disableCache: false,
+          };
+
+          console.log(details);
 
           const { data } = await axios.post(url2, details);
 
@@ -107,10 +107,14 @@ export function SearchBar() {
             }
           }
         }
+
+        // while (!done) {}
       };
       await getMetadata();
       setTokens(tkns);
       setNfts(nftsHelper);
+      setTotalTokens(tkns.length + 1);
+      setTotalNfts(nftsHelper.length + 1);
     } catch (error) {
       console.log(error);
       setError(true);
@@ -182,7 +186,10 @@ export function SearchBar() {
                 </button>
               </div>
 
-              <h1 className="w-full ml-5 font-extrabold text-2xl">Tokens</h1>
+              <h1 className="w-full ml-5 font-extrabold text-2xl">
+                Tokens{" "}
+                <span className="text-sm">( total items: {totalTokens} )</span>
+              </h1>
               <div className="w-full flex ml-5 flex-wrap">
                 <div className="w-full md:w-1/2 lg:w-2/6 flex mt-3 items-center">
                   <Image
@@ -221,7 +228,8 @@ export function SearchBar() {
                 ))}
               </div>
               <h1 className="w-full m-5 font-extrabold text-2xl">
-                Collectibles
+                Collectibles{" "}
+                <span className="text-sm">( total items: {totalNfts} )</span>
               </h1>
               <div className="w-full flex flex-wrap justify-center">
                 {nfts.map((nft) => (
