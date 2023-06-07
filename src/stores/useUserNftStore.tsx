@@ -5,7 +5,10 @@ const API_KEY = process.env.API_KEY;
 
 interface UserNftStore extends State {
   holder: boolean;
-  getUserNfts: (publicKey: PublicKey, connection: Connection) => void;
+  getUserNfts: (
+    publicKey: PublicKey,
+    connection: Connection
+  ) => Promise<boolean>;
 }
 
 const useUserNftStore = create<UserNftStore>((set, _get) => ({
@@ -64,12 +67,13 @@ const useUserNftStore = create<UserNftStore>((set, _get) => ({
         }
       };
       await getMetadata();
+      set((s) => {
+        s.holder = holder;
+      });
+      return holder;
     } catch (e) {
       console.log(`error getting balance: `, e);
     }
-    set((s) => {
-      s.holder = holder;
-    });
   },
 }));
 

@@ -30,50 +30,18 @@ export const HomeView: FC = ({}) => {
   }, [wallet.publicKey, connection, getUserNfts, nftss]);
 
   return (
-    <div className="md:hero mx-auto p-4 ">
-      <div className="md:hero-content flex flex-col">
-        {isHolder === null && (
-          <>
-            <div>
-              <h1 className="w-full text-5xl text-center pb-2 mr-28  font-bold text-whiteNavbar">
-                Welcome to the{" "}
-                <span className="bg-[url('/flames.gif')] bg-clip-text text-transparent drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
-                  VillinzHUB
-                </span>
-              </h1>
-              <h3 className="w-full text-xl text-center pb-2 mr-28 font-bold text-whiteNavbar">
-                Connect your wallet to enter
-              </h3>
-            </div>
-          </>
-        )}
-        {isHolder === false && (
-          <>
-            <div className="w-full text-5xl text-center pb-2 mr-28  font-bold text-whiteNavbar">
-              <h1 className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
-                Sorry, you are not a holder...
-              </h1>
-              <h2 className="mt-5 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
-                Go grab a VILLIN over at{" "}
-                <a
-                  href="https://magiceden.io/marketplace/madvillevillinz"
-                  className="underline"
-                  target="_blank"
-                >
-                  Magic Eden
-                </a>
-              </h2>
-            </div>
-          </>
-        )}
-        {isHolder && (
-          <>
-            <div>
-              <SearchBar />
-            </div>
-          </>
-        )}
+    <>
+      <div>
+        <h1 className="w-full text-5xl text-center pb-2 mr-28  font-bold text-whiteNavbar">
+          Welcome to the{" "}
+          <span className="bg-[url('/flames.gif')] bg-clip-text text-transparent drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+            VillinzHUB
+          </span>
+        </h1>
+        <h3 className="w-full text-xl text-center pb-2 mr-28 font-bold text-whiteNavbar">
+          Connect your wallet to enter
+        </h3>
       </div>
-    </div>
+    </>
   );
 };
