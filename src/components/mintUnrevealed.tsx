@@ -177,7 +177,10 @@ export const MintUnrevealed = () => {
       .candyMachines()
       .findByAddress({ address: candyMachineAddress });
 
-    details.push(candyMachine.itemsAvailable.toString(10));
+    details.push(
+      candyMachine.itemsAvailable.toString(10) -
+        candyMachine.itemsMinted.toString(10)
+    );
 
     // enough items available?
     if (
