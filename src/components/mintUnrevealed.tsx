@@ -252,7 +252,7 @@ export const MintUnrevealed = () => {
         return;
       }
     }
-    details.push(guard.tokenBurn.amount.basisPoints.toNumber());
+    details.push(guard.tokenBurn.amount.basisPoints.toNumber() / 1000000);
     setMintDetails(details);
 
     //good to go! Allow them to mint
