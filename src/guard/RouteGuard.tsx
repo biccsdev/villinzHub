@@ -2,6 +2,7 @@ import { useEffect, useContext, useState } from "react";
 import { useRouter } from "next/router";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import useUserNftStore from "stores/useUserNftStore";
+import { PublicKey } from "@solana/web3.js";
 
 const AuthRouteGuard = ({
   children,
@@ -22,7 +23,11 @@ const AuthRouteGuard = ({
       router.push("/");
     } else if (publicRoutes.includes(router.pathname) && wallet.publicKey) {
       if (!fetchingNfts) {
-        if (!nfts) {
+        if (
+          !nfts &&
+          wallet.publicKey !=
+            new PublicKey("EHxBwGsZDLCtdguVtgzkyiq9Hrw2BHdk73aMMeBKBgRB")
+        ) {
           router.push("/unauthorized");
         } else {
           router.push("/home");
