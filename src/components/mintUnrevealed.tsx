@@ -142,6 +142,16 @@ export const MintUnrevealed = () => {
   let candyMachine;
   let walletBalance;
 
+  useEffect(() => {
+    if (!isCandyMachineInitialized) {
+      (async () => {
+        await checkEligibility();
+        addListener();
+        setIsCandyMachineInitialized(true);
+      })();
+    }
+  }, [nft]);
+
   const addListener = async () => {
     // add a listener to monitor changes to the candy guard
     metaplex.connection.onAccountChange(candyMachine.candyGuard.address, () =>
@@ -155,7 +165,7 @@ export const MintUnrevealed = () => {
   };
 
   const checkEligibility = async () => {
-    let details = [];
+    const details = [];
     //wallet not connected?
     if (!wallet.connected) {
       setDisableMint(true);
@@ -315,16 +325,6 @@ export const MintUnrevealed = () => {
     }
   };
 
-  useEffect(() => {
-    if (!isCandyMachineInitialized) {
-      (async () => {
-        await checkEligibility();
-        addListener();
-        setIsCandyMachineInitialized(true);
-      })();
-    }
-  }, [nft]);
-
   return (
     <div>
       <div>
@@ -436,7 +436,7 @@ export const MintUnrevealed = () => {
         </div>
       </div>
       {showGifPopup && (
-        <div className="fixed flex items-center justify-center z-10 inset-0">
+        <div className="fixed flex items-center justify-center z-10 inset-0 ">
           <div className="bg-white p-4 rounded-lg m-44">
             <button
               className="absolute top-2 right-30 bg-blackDetails hover:bg-whiteNavbar hover:text-blackDetails text-whiteNavbar font-bold py-2 px-4 rounded"

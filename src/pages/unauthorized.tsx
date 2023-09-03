@@ -2,12 +2,8 @@ import WalletContextProvider from "contexts/WalletContextProvider";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { FC } from "react";
-import { AppBar } from "../components/AppBar";
 
-// require("@solana/wallet-adapter-react-ui/styles.css");
-// require("../styles/globals.css");
-
-const Unauthorized: FC<AppProps> = ({ Component, pageProps }) => {
+const Unauthorized: FC<AppProps> = () => {
   return (
     <>
       <Head>
@@ -26,6 +22,7 @@ const Unauthorized: FC<AppProps> = ({ Component, pageProps }) => {
                 href="https://magiceden.io/marketplace/madvillevillinz"
                 className="underline"
                 target="_blank"
+                rel="noreferrer"
               >
                 Magic Eden
               </a>

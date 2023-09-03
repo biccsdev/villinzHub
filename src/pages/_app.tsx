@@ -4,7 +4,6 @@ import Head from "next/head";
 import { FC } from "react";
 import { AppBar } from "../components/AppBar";
 import AuthRouteGuard from "guard/RouteGuard";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/router";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
@@ -22,7 +21,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   */
   // RouteGuards variables
   // const wallet = useWallet();
-  const { connection } = useConnection();
+  // const { connection } = useConnection();
   // const { getUserNfts } = useUserNftStore();
   const router = useRouter();
   // /Home/Index variables
