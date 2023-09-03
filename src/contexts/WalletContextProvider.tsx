@@ -1,4 +1,4 @@
-import { clusterApiUrl } from "@solana/web3.js";
+// import { clusterApiUrl } from "@solana/web3.js";
 import { FC, ReactNode, useCallback, useMemo } from "react";
 import { WalletAdapterNetwork, WalletError } from "@solana/wallet-adapter-base";
 import {
@@ -43,7 +43,6 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   return (
-    // TODO: updates needed for updating and referencing endpoint: wallet adapter rework
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} onError={onError} autoConnect>
         <ReactUIWalletModalProvider>{children}</ReactUIWalletModalProvider>

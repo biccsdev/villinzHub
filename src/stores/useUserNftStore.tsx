@@ -5,15 +5,12 @@ const API_KEY = process.env.API_KEY;
 
 interface UserNftStore extends State {
   holder: boolean;
-  getUserNfts: (
-    publicKey: PublicKey,
-    connection: Connection
-  ) => Promise<boolean>;
+  getUserNfts: (publicKey: PublicKey) => Promise<boolean>;
 }
 
 const useUserNftStore = create<UserNftStore>((set, _get) => ({
   holder: false,
-  getUserNfts: async (publicKey, connection) => {
+  getUserNfts: async (publicKey) => {
     let holder = false;
     try {
       const publicK = new PublicKey(publicKey);

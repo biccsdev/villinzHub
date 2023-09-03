@@ -67,8 +67,6 @@ export function SearchBar() {
             disableCache: false,
           };
 
-          console.log(details);
-
           const { data } = await axios.post(url2, details);
 
           for (let i = 0; i < data.length; i++) {

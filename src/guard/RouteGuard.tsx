@@ -8,47 +8,46 @@ const AuthRouteGuard = ({
   publicRoutes,
   errorRoutes,
   privateRoutes,
+  routerContext,
 }) => {
   const wallet = useWallet();
-  const { connection } = useConnection();
   const { getUserNfts } = useUserNftStore();
   const [loading, setLoading] = useState(true);
   const [nfts, setNfts] = useState(null);
-  const [fetchingNfts, setFetchingNfts] = useState(true); // New state variable
+  const [fetchingNfts, setFetchingNfts] = useState(true);
+  const router = routerContext;
 
-  const router = useRouter();
-
-  async function fetchData() {
-    if (wallet.publicKey) {
-      const holder = await getUserNfts(wallet.publicKey, connection);
-      console.log(`holder: ${holder}`);
-      if (holder !== null) {
-        setFetchingNfts(false); // Set fetchingNfts to false when fetching is complete
-      }
-      setNfts(holder);
-    }
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, [wallet.publicKey, fetchingNfts]);
-
-  useEffect(() => {
+  const checkRouteGuard = () => {
     if (privateRoutes.includes(router.pathname) && !wallet.publicKey) {
       router.push("/");
     } else if (publicRoutes.includes(router.pathname) && wallet.publicKey) {
-      console.log(`fetching: ${fetchingNfts}`);
-      console.log(`nfst: ${nfts}`);
       if (!fetchingNfts) {
         if (!nfts) {
-          // Check for nfts being null
           router.push("/unauthorized");
         } else {
           router.push("/home");
         }
       }
     }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (wallet.publicKey) {
+        const holder = await getUserNfts(wallet.publicKey);
+        setNfts(holder);
+        if (holder !== null) {
+          setFetchingNfts(false);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [wallet.publicKey]);
+
+  useEffect(() => {
+    checkRouteGuard();
   }, [wallet.publicKey, nfts, fetchingNfts]);
 
   if (loading) {

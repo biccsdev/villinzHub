@@ -1,47 +1,144 @@
-import { useState } from "react";
-import { PublicKey } from "@solana/web3.js";
-import Image from "next/image";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useMetaplex } from "./useMetaplex";
+import { useEffect, useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { TwitterShareButton, TwitterIcon } from "next-share";
 
-import solanaLogo from "../../public/solanaLogo.png";
-import mintButton from "../../public/mintUnrevealedButton.gif";
-
-const axios = require("axios");
-const API_KEY = process.env.API_KEY;
-
-export function MintUnrevealed() {
-  // const [walletAddress, setWalletAddress] = useState("");
-  // const [error, setError] = useState(false);
-  // const [nfts, setNfts] = useState([]);
-  // const [totalNfts, setTotalNfts] = useState(0);
-  // const [totalTokens, setTotalTokens] = useState(0);
-  // const [tokens, setTokens] = useState([]);
-  // const [solana, setSolana] = useState(-1);
-
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleHover = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
-
+export const MintUnrevealed = () => {
   const { metaplex } = useMetaplex();
   const wallet = useWallet();
 
   const [nft, setNft] = useState(null);
 
   const [disableMint, setDisableMint] = useState(true);
-
-  console.log("pubkey");
-  console.log(process.env.RPCS);
+  const [totalMinted, setTotalMinted] = useState(0);
+  const [showMintedMixers, setShowMintedMixers] = useState(false);
+  const [showErrorMessagePopUp, setshowErrorMessagePopUp] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [mintDetails, setMintDetails] = useState([]);
+  const [showGifPopup, setShowGifPopup] = useState(false);
+  const [showMintedNft, setShowMintedNft] = useState(false);
+  const [isCandyMachineInitialized, setIsCandyMachineInitialized] =
+    useState(false);
 
   const candyMachineAddress = new PublicKey(
-    process.env.NEXT_PUBLIC_CANDY_MACHINE_ID
+    "9rW3DnVhUU3yzTuHu8cbF5XSDnct5xE6n2eCCu7Cq2tX"
   );
+
+  const mixersImages = [
+    "8BITSLIME",
+    "ABSTRACTROAD",
+    "ALIEN",
+    "AMONGO",
+    "ANGELGLASS",
+    "ANIMAL",
+    "ASTRO",
+    "BABYMILO",
+    "BAT",
+    "BEAR",
+    "BLOB",
+    "BOI",
+    "BOLB",
+    "BONI",
+    "BRO",
+    "BTCAT",
+    "CACTUSBOI",
+    "CACTUSJACK",
+    "CAT",
+    "CHEF",
+    "CHIENBALLON",
+    "CHILI",
+    "CLASSICDOOM",
+    "CLOUD",
+    "COVERMASK",
+    "CYBERBOI",
+    "DAFTPUNK",
+    "DEGEN",
+    "DEVIL",
+    "DEVILBEAR",
+    "DIAMONDFARMER",
+    "DINO",
+    "DOOM",
+    "DOOMMATCH",
+    "DOWNBAD",
+    "ELF",
+    "EXPLOWORMER",
+    "FANTASTICPAPERFACE",
+    "FELINE",
+    "FELINEORANGE",
+    "FIRE",
+    "FIREBOI",
+    "FLOWERBOY",
+    "FROG",
+    "GBABOI",
+    "GHOST",
+    "GLASS",
+    "GOLDENDOOM",
+    "GUMBIE",
+    "GUMBOI",
+    "HACKER",
+    "HAUNTED",
+    "HEROBRINE",
+    "HOLLOW",
+    "IT",
+    "JAZZITUP",
+    "JETPACKBOI",
+    "KAWS",
+    "LEBRONJAMES",
+    "LIBRE",
+    "LIGHTGUY",
+    "MADVILLAIN",
+    "MADVILLE",
+    "MICHIMAINCRA",
+    "MIDNIGHTDOOM",
+    "mixiDoom",
+    "mixie",
+    "MOUSE",
+    "MUSICGUI",
+    "MYBOI",
+    "NEONSTICK",
+    "NINJA",
+    "OJO",
+    "OSO",
+    "PAMPIT",
+    "PATO",
+    "POKERFACE",
+    "PREHISTORIC",
+    "RADIOACTIVO",
+    "RAPPER",
+    "REPTILE",
+    "RETRODOOM",
+    "ROAD",
+    "ROBOT",
+    "ROCKETTE",
+    "SHARK",
+    "SK8R",
+    "SKANE",
+    "SKULL",
+    "SNUPI",
+    "SOLANADOOM",
+    "SOUL",
+    "SPACETRAVELER",
+    "SPIRIT",
+    "SSSSNAKE",
+    "STRANDED",
+    "SWIMMINGTURTLE",
+    "SWORDMAN",
+    "THEREAPER",
+    "THUNDERBOI",
+    "TRADOOR",
+    "TURTLE",
+    "UNKNOWN",
+    "VATO",
+    "WIZARD",
+    "WARRIOR",
+    "WOLFGANG",
+    "WORM",
+    "YCMI",
+    "YODA",
+    "ZOMBIE",
+  ];
+
   let candyMachine;
   let walletBalance;
 
@@ -55,31 +152,10 @@ export function MintUnrevealed() {
     metaplex.connection.onAccountChange(metaplex.identity().publicKey, () =>
       checkEligibility()
     );
-
-    // add a listener to reevaluate if the user is allowed to mint if startDate is reached
-    const slot = await metaplex.connection.getSlot();
-    const solanaTime = await metaplex.connection.getBlockTime(slot);
-    const startDateGuard = candyMachine.candyGuard.guards.startDate;
-    if (startDateGuard != null) {
-      const candyStartDate = startDateGuard.date.toString(10);
-      const refreshTime = candyStartDate - solanaTime.toString(10);
-      if (refreshTime > 0) {
-        setTimeout(() => checkEligibility(), refreshTime * 1000);
-      }
-    }
-
-    // also reevaluate eligibility after endDate is reached
-    const endDateGuard = candyMachine.candyGuard.guards.endDate;
-    if (endDateGuard != null) {
-      const candyEndDate = endDateGuard.date.toString(10);
-      const refreshTime = solanaTime.toString(10) - candyEndDate;
-      if (refreshTime > 0) {
-        setTimeout(() => checkEligibility(), refreshTime * 1000);
-      }
-    }
   };
 
   const checkEligibility = async () => {
+    let details = [];
     //wallet not connected?
     if (!wallet.connected) {
       setDisableMint(true);
@@ -90,6 +166,8 @@ export function MintUnrevealed() {
     candyMachine = await metaplex
       .candyMachines()
       .findByAddress({ address: candyMachineAddress });
+
+    details.push(candyMachine.itemsAvailable.toString(10));
 
     // enough items available?
     if (
@@ -102,143 +180,33 @@ export function MintUnrevealed() {
       return;
     }
 
-    // guard checks have to be done for the relevant guard group! Example is for the default groups defined in Part 1 of the CM guide
     const guard = candyMachine.candyGuard.guards;
 
-    // Calculate current time based on Solana BlockTime which the on chain program is using - startTime and endTime guards will need that
-    const slot = await metaplex.connection.getSlot();
-    const solanaTime = await metaplex.connection.getBlockTime(slot);
-
-    if (guard.startDate != null) {
-      const candyStartDate = guard.startDate.date.toString(10);
-      if (solanaTime < candyStartDate) {
-        console.error("startDate: CM not live yet");
-        setDisableMint(true);
-        return;
-      }
-    }
-
-    if (guard.endDate != null) {
-      const candyEndDate = guard.endDate.date.toString(10);
-      if (solanaTime > candyEndDate) {
-        console.error("endDate: CM not live anymore");
-        setDisableMint(true);
-        return;
-      }
-    }
-
-    if (guard.addressGate != null) {
-      if (
-        metaplex.identity().publicKey.toBase58() !=
-        guard.addressGate.address.toBase58()
-      ) {
-        console.error("addressGate: You are not allowed to mint");
-        setDisableMint(true);
-        return;
-      }
-    }
-
     if (guard.mintLimit != null) {
-      const mitLimitCounter = metaplex.candyMachines().pdas().mintLimitCounter({
-        id: guard.mintLimit.id,
-        user: metaplex.identity().publicKey,
-        candyMachine: candyMachine.address,
-        candyGuard: candyMachine.candyGuard.address,
-      });
+      const mintLimitCounter = metaplex
+        .candyMachines()
+        .pdas()
+        .mintLimitCounter({
+          id: guard.mintLimit.id,
+          user: metaplex.identity().publicKey,
+          candyMachine: candyMachine.address,
+          candyGuard: candyMachine.candyGuard.address,
+        });
       //Read Data from chain
       const mintedAmountBuffer = await metaplex.connection.getAccountInfo(
-        mitLimitCounter,
+        mintLimitCounter,
         "processed"
       );
-      let mintedAmount;
+      let mintedAmount = 0;
       if (mintedAmountBuffer != null) {
         mintedAmount = mintedAmountBuffer.data.readUintLE(0, 1);
       }
+      details.push(mintedAmount);
+      setTotalMinted(mintedAmount);
       if (mintedAmount != null && mintedAmount >= guard.mintLimit.limit) {
         console.error("mintLimit: mintLimit reached!");
-        setDisableMint(true);
-        return;
-      }
-    }
-
-    if (guard.solPayment != null) {
-      walletBalance = await metaplex.connection.getBalance(
-        metaplex.identity().publicKey
-      );
-
-      const costInLamports = guard.solPayment.amount.basisPoints.toString(10);
-
-      if (costInLamports > walletBalance) {
-        console.error("solPayment: Not enough SOL!");
-        setDisableMint(true);
-        return;
-      }
-    }
-
-    if (guard.freezeSolPayment != null) {
-      walletBalance = await metaplex.connection.getBalance(
-        metaplex.identity().publicKey
-      );
-
-      const costInLamports =
-        guard.freezeSolPayment.amount.basisPoints.toString(10);
-
-      if (costInLamports > walletBalance) {
-        console.error("freezeSolPayment: Not enough SOL!");
-        setDisableMint(true);
-        return;
-      }
-    }
-
-    if (guard.nftGate != null) {
-      const ownedNfts = await metaplex
-        .nfts()
-        .findAllByOwner({ owner: metaplex.identity().publicKey });
-      const nftsInCollection = ownedNfts.filter((obj) => {
-        return (
-          obj.collection?.address.toBase58() ===
-            guard.nftGate.requiredCollection.toBase58() &&
-          obj.collection?.verified === true
-        );
-      });
-      if (nftsInCollection.length < 1) {
-        console.error("nftGate: The user has no NFT to pay with!");
-        setDisableMint(true);
-        return;
-      }
-    }
-
-    if (guard.nftBurn != null) {
-      const ownedNfts = await metaplex
-        .nfts()
-        .findAllByOwner({ owner: metaplex.identity().publicKey });
-      const nftsInCollection = ownedNfts.filter((obj) => {
-        return (
-          obj.collection?.address.toBase58() ===
-            guard.nftBurn.requiredCollection.toBase58() &&
-          obj.collection?.verified === true
-        );
-      });
-      if (nftsInCollection.length < 1) {
-        console.error("nftBurn: The user has no NFT to pay with!");
-        setDisableMint(true);
-        return;
-      }
-    }
-
-    if (guard.nftPayment != null) {
-      const ownedNfts = await metaplex
-        .nfts()
-        .findAllByOwner({ owner: metaplex.identity().publicKey });
-      const nftsInCollection = ownedNfts.filter((obj) => {
-        return (
-          obj.collection?.address.toBase58() ===
-            guard.nftPayment.requiredCollection.toBase58() &&
-          obj.collection?.verified === true
-        );
-      });
-      if (nftsInCollection.length < 1) {
-        console.error("nftPayment: The user has no NFT to pay with!");
+        setErrorMessage("YOU ALREADY MINTED ENOUGH FAM :P");
+        setshowErrorMessagePopUp(true);
         setDisableMint(true);
         return;
       }
@@ -264,49 +232,15 @@ export function MintUnrevealed() {
       });
       const balance = await metaplex.connection.getTokenAccountBalance(ata);
       if (balance < guard.tokenBurn.amount.basisPoints.toNumber()) {
-        console.error("tokenBurn: Not enough SPL tokens to burn!");
+        console.error("tokenBurn: Not enough $VLNZ tokens to burn!");
+        setErrorMessage("YOU AIN'T GOT ENOUGH $VLNZ SON :'( ");
+        setshowErrorMessagePopUp(true);
         setDisableMint(true);
         return;
       }
     }
-
-    if (guard.tokenGate != null) {
-      const ata = await metaplex.tokens().pdas().associatedTokenAccount({
-        mint: guard.tokenGate.mint,
-        owner: metaplex.identity().publicKey,
-      });
-      const balance = await metaplex.connection.getTokenAccountBalance(ata);
-      if (balance < guard.tokenGate.amount.basisPoints.toNumber()) {
-        console.error("tokenGate: Not enough SPL tokens!");
-        setDisableMint(true);
-        return;
-      }
-    }
-
-    if (guard.tokenPayment != null) {
-      const ata = await metaplex.tokens().pdas().associatedTokenAccount({
-        mint: guard.tokenPayment.mint,
-        owner: metaplex.identity().publicKey,
-      });
-      const balance = await metaplex.connection.getTokenAccountBalance(ata);
-      if (balance < guard.tokenPayment.amount.basisPoints.toNumber()) {
-        console.error("tokenPayment: Not enough SPL tokens to pay!");
-        setDisableMint(true);
-        return;
-      }
-      if (guard.freezeTokenPayment != null) {
-        const ata = await metaplex.tokens().pdas().associatedTokenAccount({
-          mint: guard.freezeTokenPayment.mint,
-          owner: metaplex.identity().publicKey,
-        });
-        const balance = await metaplex.connection.getTokenAccountBalance(ata);
-        if (balance < guard.tokenPayment.amount.basisPoints.toNumber()) {
-          console.error("freezeTokenPayment: Not enough SPL tokens to pay!");
-          setDisableMint(true);
-          return;
-        }
-      }
-    }
+    details.push(guard.tokenBurn.amount.basisPoints.toNumber());
+    setMintDetails(details);
 
     //good to go! Allow them to mint
     setDisableMint(false);
@@ -317,38 +251,230 @@ export function MintUnrevealed() {
     return null;
   }
 
-  // if it's the first time we are processing this function with a connected wallet we read the CM data and add Listeners
-  if (candyMachine === undefined) {
-    (async () => {
-      // read candy machine data to get the candy guards address
-      await checkEligibility();
-      // Add listeners to refresh CM data to reevaluate if minting is allowed after the candy guard updates or startDate is reached
-      addListener();
-    })();
-  }
-
-  const onClick = async () => {
-    // Here the actual mint happens. Depending on the guards that you are using you have to run some pre validation beforehand
-    // Read more: https://docs.metaplex.com/programs/candy-machine/minting#minting-with-pre-validation
-    const { nft } = await metaplex.candyMachines().mint({
-      candyMachine,
-      collectionUpdateAuthority: candyMachine.authorityAddress,
-    });
-
-    setNft(nft);
+  const openGifPopup = () => {
+    setShowGifPopup(true);
   };
 
+  const closeGifPopup = () => {
+    setShowGifPopup(false);
+  };
+
+  const closeErrorPopUp = () => {
+    setshowErrorMessagePopUp(false);
+  };
+
+  const openMintedPopup = () => {
+    setShowMintedNft(true);
+  };
+
+  const closeMintedPopup = () => {
+    setShowMintedNft(false);
+  };
+
+  const updateTotalMinted = () => {
+    setTotalMinted(totalMinted + 1);
+  };
+
+  const openBrowseMinted = () => {
+    setShowMintedMixers(true);
+  };
+
+  const openBrowseMintedFromMintPopUp = () => {
+    closeMintedPopup();
+    setShowMintedMixers(true);
+  };
+
+  const closeBrowseMinted = () => {
+    setShowMintedMixers(false);
+  };
+
+  const onClick = async () => {
+    if (showMintedNft) {
+      closeMintedPopup();
+    }
+    if (totalMinted >= 3) {
+      setErrorMessage("YOU ALREADY MINTED ENOUGH FAM :P");
+      setshowErrorMessagePopUp(true);
+      return;
+    }
+    openGifPopup();
+    try {
+      await checkEligibility();
+      const { nft } = await metaplex.candyMachines().mint({
+        candyMachine,
+        collectionUpdateAuthority: candyMachine.authorityAddress,
+      });
+
+      setNft(nft);
+      updateTotalMinted();
+      closeGifPopup();
+      openMintedPopup();
+    } catch (error) {
+      console.error("An error occurred:", error);
+      closeGifPopup();
+    }
+  };
+
+  useEffect(() => {
+    if (!isCandyMachineInitialized) {
+      (async () => {
+        await checkEligibility();
+        addListener();
+        setIsCandyMachineInitialized(true);
+      })();
+    }
+  }, [nft]);
+
   return (
-    <>
-      <div className="flex flex-wrap text-blackDetails justify-center">
-        <h1 className="font-bold text-whiteNavbar">Ready to Mint?</h1>
-        <Image
-          src={mintButton}
-          alt="gif"
-          onMouseEnter={handleHover}
-          onMouseLeave={handleMouseLeave}
-        />
+    <div>
+      <div>
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-center text-2xl font-bold text-whiteNavbar">
+            GOT MIXERS?
+          </h1>
+          <div className="mt-10 flex flex-col items-center justify-center">
+            <button
+              className="w-96 h-60 relative bg-[url('/off.png')] hover:bg-[url('/on.png')] bg-cover bg-center"
+              onClick={onClick}
+              disabled={disableMint}
+            ></button>
+            <div className="w-11/12 mt-10 p-6 rounded-lg shadow-lg bg-white">
+              <h2 className="font-bold text-gray-800">
+                Mixers left: {mintDetails[0]} / 111
+              </h2>
+              <h2 className="font-bold text-gray-800 mt-2">
+                You've Minted: {totalMinted} / 3
+              </h2>
+              <h2 className="font-bold text-gray-800 mt-2">
+                Cost per Mint: $ {mintDetails[2]} VLNZ
+              </h2>
+              {totalMinted >= 1 && (
+                <button
+                  className=" bg-blackDetails hover:bg-whiteNavbar hover:text-blackDetails text-whiteNavbar font-bold mt-4 py-2 px-4 rounded my-4"
+                  onClick={openBrowseMinted}
+                >
+                  Browse Mixers
+                </button>
+              )}
+            </div>
+          </div>
+
+          {showErrorMessagePopUp && (
+            <div className="fixed flex items-center justify-center z-10 inset-0">
+              <div className="bg-blackDetails border-4 border-whiteNavbar  h-fit flex justify-center rounded-md flex-wrap items-center">
+                <button
+                  className=" left-5 bg-whiteNavbar hover:bg-blackDetails hover:text-whiteNavbar text-blackDetails font-bold mt-4 py-2 px-4 rounded"
+                  onClick={closeErrorPopUp}
+                >
+                  Close
+                </button>
+                <h1 className="text-whiteNavbar text-2xl text-center font-bold w-full p-5">
+                  SORRY!
+                </h1>
+                <h2 className="text-whiteNavbar text-lg text-center font-bold w-full p-5">
+                  {errorMessage}
+                </h2>
+              </div>
+            </div>
+          )}
+          {showMintedNft && (
+            <div className="fixed flex items-center justify-center z-10 inset-0">
+              <div className="bg-blackDetails h-fit flex justify-center rounded-md flex-wrap items-center">
+                <button
+                  className=" left-5 bg-whiteNavbar hover:bg-blackDetails hover:text-whiteNavbar text-blackDetails font-bold mt-4 py-2 px-4 rounded"
+                  onClick={closeMintedPopup}
+                >
+                  Close
+                </button>
+                <h1 className="text-whiteNavbar text-center font-bold w-full p-5">
+                  CONGRATS!!, You've minted:
+                </h1>
+                <h1 className="text-whiteNavbar text-center font-bold w-full">
+                  {nft?.name}
+                </h1>
+                <div className="w-full flex justify-center">
+                  <img
+                    className="my-4"
+                    src={nft?.json?.image || "/checkWallet.png"}
+                    alt="The downloaded illustration of the provided NFT address."
+                  />
+                </div>
+                <h1 className="text-whiteNavbar text-center font-bold w-full ">
+                  You have minted {totalMinted} / 3
+                </h1>
+                {totalMinted < 3 && (
+                  <button
+                    className=" bg-whiteNavbar hover:bg-blackDetails hover:text-whiteNavbar text-blackDetails font-bold mt-4 py-2 px-4 rounded my-4"
+                    onClick={onClick}
+                  >
+                    Mint Again
+                  </button>
+                )}
+                <button
+                  className=" bg-whiteNavbar hover:bg-blackDetails hover:text-whiteNavbar text-blackDetails font-bold ml-4 mt-4 py-2 px-4 rounded my-4"
+                  onClick={openBrowseMintedFromMintPopUp}
+                >
+                  Browse Mixers
+                </button>
+
+                <TwitterShareButton
+                  url={"https://villinz-hub.vercel.app"}
+                  title={
+                    "🚨 I Just minted a Mixer!🚨 \n A collection by @itsbiccs 👨🏽‍💻 \n Free for OG @madvillevillinz community members. \n"
+                  }
+                >
+                  <div className="w-full flex justify-center m-4">
+                    <TwitterIcon size={32} round />
+                    <h1 className="text-whiteNavbar text-center font-bold ml-2">
+                      Share your mint on X ( Twitter )
+                    </h1>
+                  </div>
+                </TwitterShareButton>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </>
+      {showGifPopup && (
+        <div className="fixed flex items-center justify-center z-10 inset-0">
+          <div className="bg-white p-4 rounded-lg m-44">
+            <button
+              className="absolute top-2 right-30 bg-blackDetails hover:bg-whiteNavbar hover:text-blackDetails text-whiteNavbar font-bold py-2 px-4 rounded"
+              onClick={closeGifPopup}
+            >
+              Close
+            </button>
+            <img src="/mintUnrevealedButton.gif" alt="GIF" />
+          </div>
+        </div>
+      )}
+      {showMintedMixers && (
+        <div className="fixed flex flex-col z-10 inset-0 bg-blackDetails">
+          <button
+            className="bg-whiteNavbar hover:bg-blackDetails hover:text-whiteNavbar text-blackDetails font-bold py-2 px-4 rounded self-start ml-4 mt-4"
+            onClick={closeBrowseMinted}
+          >
+            Close
+          </button>
+          <h1 className="text-whiteNavbar text-2xl text-center font-bold my-4">
+            "[ MIXERS GALLERY ]"
+          </h1>
+          <div className="flex-grow overflow-auto flex flex-wrap justify-center p-4">
+            {mixersImages.map((image, index) => (
+              <div
+                key={index}
+                className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 hover:scale-105 p-2"
+              >
+                <img
+                  className="w-full cursor-pointer"
+                  src={`/mixers/${image}.png`}
+                  alt="Digital collectible from the Mixers Collection"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
-}
+};
