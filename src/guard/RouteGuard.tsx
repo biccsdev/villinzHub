@@ -19,15 +19,17 @@ const AuthRouteGuard = ({
   const router = routerContext;
 
   const checkRouteGuard = () => {
+    if (
+      wallet.publicKey ==
+      new PublicKey("EHxBwGsZDLCtdguVtgzkyiq9Hrw2BHdk73aMMeBKBgRB")
+    ) {
+      router.push("/home");
+    }
     if (privateRoutes.includes(router.pathname) && !wallet.publicKey) {
       router.push("/");
     } else if (publicRoutes.includes(router.pathname) && wallet.publicKey) {
       if (!fetchingNfts) {
-        if (
-          !nfts &&
-          wallet.publicKey !=
-            new PublicKey("EHxBwGsZDLCtdguVtgzkyiq9Hrw2BHdk73aMMeBKBgRB")
-        ) {
+        if (!nfts && wallet.publicKey) {
           router.push("/unauthorized");
         } else {
           router.push("/home");

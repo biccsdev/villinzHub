@@ -18,6 +18,7 @@ export const MintUnrevealed = () => {
   const [mintDetails, setMintDetails] = useState([]);
   const [showGifPopup, setShowGifPopup] = useState(false);
   const [showMintedNft, setShowMintedNft] = useState(false);
+  const [mixersLeft, setMixersLeft] = useState(0);
   const [isCandyMachineInitialized, setIsCandyMachineInitialized] =
     useState(false);
 
@@ -182,6 +183,11 @@ export const MintUnrevealed = () => {
         candyMachine.itemsMinted.toString(10)
     );
 
+    setMixersLeft(
+      candyMachine.itemsAvailable.toString(10) -
+        candyMachine.itemsMinted.toString(10)
+    );
+
     // enough items available?
     if (
       candyMachine.itemsMinted.toString(10) -
@@ -218,8 +224,6 @@ export const MintUnrevealed = () => {
       setTotalMinted(mintedAmount);
       if (mintedAmount != null && mintedAmount >= guard.mintLimit.limit) {
         console.error("mintLimit: mintLimit reached!");
-        setErrorMessage("YOU ALREADY MINTED ENOUGH FAM :P");
-        setshowErrorMessagePopUp(true);
         setDisableMint(true);
         return;
       }
@@ -343,13 +347,13 @@ export const MintUnrevealed = () => {
             ></button>
             <div className="w-11/12 mt-10 p-6 rounded-lg shadow-lg bg-white">
               <h2 className="font-bold text-gray-800">
-                Mixers left: {mintDetails[0]} / 111
+                Mixers left: {mixersLeft} / 111
               </h2>
               <h2 className="font-bold text-gray-800 mt-2">
                 You've Minted: {totalMinted} / 3
               </h2>
               <h2 className="font-bold text-gray-800 mt-2">
-                Cost per Mint: $ {mintDetails[2]} VLNZ
+                Cost per Mint: 555 $ VLNZ
               </h2>
               {totalMinted >= 1 && (
                 <button
